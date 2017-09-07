@@ -182,11 +182,12 @@ export class DataTableInstance extends React.Component {
     doNotShowEmptyRows: false,
     withCheckboxes: true,
     numOfEntities: 60,
+    selectedIds: null,
     entities: generateFakeRows(defaultNumOfEntities)
   };
 
   render() {
-    const { numOfEntities, entities } = this.state;
+    const { numOfEntities, entities, selectedIds } = this.state;
     const { tableParams } = this.props;
     const { page, pageSize } = tableParams;
     let entitiesToPass = [];
@@ -223,6 +224,19 @@ export class DataTableInstance extends React.Component {
             this.setState({
               numOfEntities,
               entities: generateFakeRows(numOfEntities)
+            });
+          }}
+        />
+        <br />
+        Select records by ids (a single number or numbers separated by ","):{" "}
+        <input
+          onChange={e => {
+            const val = e.target.value;
+            const selectedIds = (val.indexOf(",") > -1
+              ? val.split(",").map(num => parseInt(num, 10))
+              : [parseInt(val, 10)]).filter(val => !isNaN(val));
+            this.setState({
+              selectedIds
             });
           }}
         />
@@ -291,6 +305,7 @@ export class DataTableInstance extends React.Component {
           onSingleRowSelect={noop}
           onDeselect={noop}
           onMultiRowSelect={noop}
+          selectedIds={selectedIds}
         />
         <br />
         <br />

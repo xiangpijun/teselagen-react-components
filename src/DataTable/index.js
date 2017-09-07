@@ -4,7 +4,7 @@ import { compose } from "redux";
 import { range, isNumber } from "lodash";
 import React from "react";
 import moment from "moment";
-
+import uniqid from "uniqid";
 import camelCase from "lodash/camelCase";
 import {
   Button,
@@ -20,13 +20,15 @@ import {
 
 import { onEnterHelper } from "../utils/handlerHelpers";
 import { getSelectedRowsFromEntities } from "./utils/selection";
-import rowClick from "./utils/rowClick";
+import rowClick, { finalizeSelection } from "./utils/rowClick";
 import ReactTable from "react-table";
 import PagingTool from "./PagingTool";
 import FilterAndSortMenu from "./FilterAndSortMenu";
 import getIdOrCode from "./utils/getIdOrCode";
 import "../toastr";
 import "./style.css";
+
+const ROW_HEIGHT = 35;
 
 const noop = () => {};
 class ReactDataTable extends React.Component {
@@ -75,7 +77,29 @@ class ReactDataTable extends React.Component {
               });
         }, [])
       : [];
-    this.setState({ columns });
+    const tableId = uniqid();
+    this.setState({ columns, tableId });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { tableId } = this.state;
+    const { selectedIds } = nextProps;
+    const { selectedIds: oldSelectedIds, entities } = this.props;
+    if (selectedIds === oldSelectedIds) return;
+    const idArray = Array.isArray(selectedIds) ? selectedIds : [selectedIds];
+    const newIdMap = idArray.reduce((acc, idOrCode) => {
+      acc[idOrCode] = true;
+      return acc;
+    }, {});
+    finalizeSelection({ idMap: newIdMap, props: nextProps });
+    const idToScrollTo = idArray[0];
+    const entityIndexToScrollTo = entities.findIndex(
+      e => e.id === idToScrollTo || e.code === idToScrollTo
+    );
+    if (entityIndexToScrollTo === -1) return;
+    const scrollHeight = ROW_HEIGHT * entityIndexToScrollTo;
+    const tableBody = document.getElementById(tableId);
+    if (tableBody) tableBody.scrollTop = scrollHeight;
   }
 
   render() {
@@ -105,14 +129,18 @@ class ReactDataTable extends React.Component {
       reduxFormSelectedEntityIdMap,
       selectedFilter
     } = this.props;
+    // used for programmatic scrolling
+    const { tableId } = this.state;
     let entityCountToUse = !isNumber(entityCount)
       ? entities.length
       : entityCount;
     const hasFilters = selectedFilter || searchTerm;
     const numRows = isInfinite ? entities.length : pageSize;
-    const maybeSpinner = isLoading
-      ? <Spinner className={Classes.SMALL} />
-      : undefined;
+    const maybeSpinner = isLoading ? (
+      <Spinner className={Classes.SMALL} />
+    ) : (
+      undefined
+    );
 
     const selectedRowCount = Object.keys(
       reduxFormSelectedEntityIdMap.input.value || {}
@@ -129,24 +157,25 @@ class ReactDataTable extends React.Component {
         <div className={"data-table-header"}>
           <div className={"data-table-title-and-buttons"}>
             {tableName &&
-              withTitle &&
-              <span className={"data-table-title"}>
-                {tableName}
-              </span>}
+            withTitle && (
+              <span className={"data-table-title"}>{tableName}</span>
+            )}
 
             {this.props.children}
           </div>
-          {withSearch &&
+          {withSearch && (
             <div className={"data-table-search-and-clear-filter-container"}>
-              {hasFilters
-                ? <Button
-                    className={"data-table-clear-filters"}
-                    onClick={() => {
-                      clearFilters();
-                    }}
-                    text={"Clear filters"}
-                  />
-                : ""}
+              {hasFilters ? (
+                <Button
+                  className={"data-table-clear-filters"}
+                  onClick={() => {
+                    clearFilters();
+                  }}
+                  text={"Clear filters"}
+                />
+              ) : (
+                ""
+              )}
               <SearchBar
                 {...{
                   reduxFormSearchInput,
@@ -154,7 +183,8 @@ class ReactDataTable extends React.Component {
                   maybeSpinner
                 }}
               />
-            </div>}
+            </div>
+          )}
         </div>
         <ReactTable
           data={entities}
@@ -163,13 +193,12 @@ class ReactDataTable extends React.Component {
           showPagination={false}
           sortable={false}
           loading={isLoading}
+          getTbodyProps={() => ({
+            id: tableId
+          })}
           getTrGroupProps={this.getTableRowProps}
           NoDataComponent={({ children }) =>
-            isLoading
-              ? null
-              : <div className="rt-noData">
-                  {children}
-                </div>}
+            isLoading ? null : <div className="rt-noData">{children}</div>}
           style={{
             maxHeight,
             margin: "20px 0",
@@ -178,26 +207,30 @@ class ReactDataTable extends React.Component {
         />
         <div className={"data-table-footer"}>
           <div className={"tg-react-table-selected-count"}>
-            {selectedRowCount > 0
-              ? ` ${selectedRowCount} Record${selectedRowCount === 1
-                  ? ""
-                  : "s"} Selected `
-              : ""}
+            {selectedRowCount > 0 ? (
+              ` ${selectedRowCount} Record${selectedRowCount === 1
+                ? ""
+                : "s"} Selected `
+            ) : (
+              ""
+            )}
           </div>
           {!isInfinite &&
           withPaging &&
-          (hidePageSizeWhenPossible ? entityCountToUse > pageSize : true)
-            ? <PagingTool
-                paging={{
-                  total: entityCountToUse,
-                  page,
-                  pageSize
-                }}
-                onRefresh={onRefresh}
-                setPage={setPage}
-                setPageSize={setPageSize}
-              />
-            : <div className={"tg-placeholder"} />}
+          (hidePageSizeWhenPossible ? entityCountToUse > pageSize : true) ? (
+            <PagingTool
+              paging={{
+                total: entityCountToUse,
+                page,
+                pageSize
+              }}
+              onRefresh={onRefresh}
+              setPage={setPage}
+              setPageSize={setPageSize}
+            />
+          ) : (
+            <div className={"tg-placeholder"} />
+          )}
         </div>
       </div>
     );
@@ -265,7 +298,7 @@ class ReactDataTable extends React.Component {
 
     return (
       <div>
-        {!isSingleSelect &&
+        {!isSingleSelect && (
           <Checkbox
             onChange={() => {
               const newIdMap = reduxFormSelectedEntityIdMap.input.value || {};
@@ -283,7 +316,8 @@ class ReactDataTable extends React.Component {
             }}
             {...checkboxProps}
             className={"tg-react-table-checkbox-cell-inner"}
-          />}
+          />
+        )}
       </div>
     );
   };
@@ -390,15 +424,13 @@ class ReactDataTable extends React.Component {
         tableColumn.width = column.width;
       }
       if (schemaForColumn.type === "timestamp") {
-        tableColumn.Cell = props =>
-          <span>
-            {moment(new Date(props.value)).format("MMM D, YYYY")}
-          </span>;
+        tableColumn.Cell = props => (
+          <span>{moment(new Date(props.value)).format("MMM D, YYYY")}</span>
+        );
       } else if (schemaForColumn.type === "boolean") {
-        tableColumn.Cell = props =>
-          <span>
-            {props.value ? "True" : "False"}
-          </span>;
+        tableColumn.Cell = props => (
+          <span>{props.value ? "True" : "False"}</span>
+        );
       }
       if (cellRenderer && cellRenderer[schemaForColumn.path]) {
         tableColumn.Cell = cellRenderer[schemaForColumn.path];
@@ -426,11 +458,7 @@ class ReactDataTable extends React.Component {
       history
     });
     if (!itemsToRender) return null;
-    const menu = (
-      <Menu>
-        {itemsToRender}
-      </Menu>
-    );
+    const menu = <Menu>{itemsToRender}</Menu>;
     ContextMenu.show(menu, { left: e.clientX, top: e.clientY });
   };
 
@@ -464,7 +492,7 @@ class ReactDataTable extends React.Component {
         <span title={displayName} className={"tg-react-table-name"}>
           {displayName + "  "}
         </span>
-        {!sortDisabled &&
+        {!sortDisabled && (
           <div className={"tg-sort-arrow-container"}>
             <span
               title={"Sort Z-A"}
@@ -486,7 +514,8 @@ class ReactDataTable extends React.Component {
                 (ordering && isOrderedDown ? "tg-active-sort" : "")
               }
             />
-          </div>}
+          </div>
+        )}
         <Popover position={Position.BOTTOM_RIGHT}>
           <Button
             title={"Filter"}
@@ -517,14 +546,15 @@ function SearchBar({ reduxFormSearchInput, setSearchTerm, maybeSpinner }) {
         setSearchTerm(reduxFormSearchInput.input.value);
       })}
       rightElement={
-        maybeSpinner ||
-        <Button
-          className={Classes.MINIMAL}
-          iconName={"pt-icon-search"}
-          onClick={() => {
-            setSearchTerm(reduxFormSearchInput.input.value);
-          }}
-        />
+        maybeSpinner || (
+          <Button
+            className={Classes.MINIMAL}
+            iconName={"pt-icon-search"}
+            onClick={() => {
+              setSearchTerm(reduxFormSearchInput.input.value);
+            }}
+          />
+        )
       }
     />
   );
