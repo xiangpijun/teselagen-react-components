@@ -93,6 +93,7 @@ class ReactDataTable extends React.Component {
     }, {});
     finalizeSelection({ idMap: newIdMap, props: nextProps });
     const idToScrollTo = idArray[0];
+    if (!idToScrollTo && idToScrollTo !== 0) return;
     const entityIndexToScrollTo = entities.findIndex(
       e => e.id === idToScrollTo || e.code === idToScrollTo
     );
