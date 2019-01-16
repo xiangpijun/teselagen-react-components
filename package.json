@@ -3,6 +3,7 @@
   "version": "24.3.41",
   "description": "Teselagen React Component Library",
   "main": "lib/index.js",
+  "types": "./typings.d.ts",
   "homepage": "http://teselagen.github.io/teselagen-react-components",
   "//module": "es/index.js",
   "files": [
@@ -121,6 +122,7 @@
     "redux-thunk": "*",
     "sinon": "^4.4.9",
     "tg-client-query-builder": "^2.12.2",
+    "typescript-tslint-plugin": "^0.2.1",
     "ve-range-utils": "^2.5.0",
     "why-did-you-update": "^1.0.6"
   },
