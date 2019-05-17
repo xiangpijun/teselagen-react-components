@@ -14,6 +14,9 @@ module.exports = {
       // "ve-range-utils":
       //   console.log("comment me back out!") ||
       //   path.resolve("../../ve-range-utils/src/"),
+      "react-rnd":
+        console.log("comment me back out!") ||
+        path.resolve("../react-rnd/lib/"),
       // "ve-sequence-utils":
       //   console.log("comment me back out!") ||
       //   path.resolve("../../ve-sequence-utils/src/"),

@@ -21,19 +21,22 @@ class Example extends Component {
           onClose={this.handleChange}
           height={300}
           width={300}
+          // RndProps={{
+          //   positionOffset: { x: "20%", y: "20%" }
+          // }}
           title={"I'm Resizable and Draggable!"}
         >
           <div className={Classes.DIALOG_BODY}>
-      I am a dialog
-      <div style={{width: 250}}>with a bunch of stuff in it</div>
-      {[1, 2, 3, 4, 5, 5, 6, 6, 77, 7, 12, 2, 34].map((num, i) => {
-        return (
-          <div key={i} style={{ height: 40, background: Math.random() }}>
-            {num}
+            I am a dialog
+            <div style={{ width: 250 }}>with a bunch of stuff in it</div>
+            {[1, 2, 3, 4, 5, 5, 6, 6, 77, 7, 12, 2, 34].map((num, i) => {
+              return (
+                <div key={i} style={{ height: 40, background: Math.random() }}>
+                  {num}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
         </ResizableDraggableDialog>
       </div>
     );
