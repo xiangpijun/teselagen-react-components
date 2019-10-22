@@ -92,7 +92,7 @@ class DataTableDemo extends React.Component {
       schema,
       defaults: {
         order: ["isShared"], //default sort specified here!
-        pageSize: 5
+        pageSize: 500
       },
       urlConnected: this.state.urlConnected,
       onlyOneFilter: this.state.onlyOneFilter,
@@ -202,7 +202,7 @@ const generateFakeRows = num => {
   });
 };
 
-const defaultNumOfEntities = 60;
+const defaultNumOfEntities = 600;
 
 class DataTableInstance extends React.Component {
   constructor(props) {
@@ -240,7 +240,7 @@ class DataTableInstance extends React.Component {
       showCount: false,
       doNotShowEmptyRows: false,
       withCheckboxes: true,
-      numOfEntities: 60,
+      numOfEntities: defaultNumOfEntities,
       selectedIds: undefined,
       alwaysRerender: false,
       entities: generateFakeRows(defaultNumOfEntities),

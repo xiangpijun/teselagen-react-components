@@ -432,3 +432,7 @@
 .vertical-scrollbar-present {
   width: calc(100% - 15px) !important;
 }
+
+.bp3-table-container {
+  height: 700px;
+}

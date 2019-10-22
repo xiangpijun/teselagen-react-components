@@ -32,11 +32,14 @@ import {
   Tooltip
 } from "@blueprintjs/core";
 import classNames from "classnames";
+import "@blueprintjs/table/lib/css/table.css";
+
 import scrollIntoView from "dom-scroll-into-view";
 import { SortableElement } from "react-sortable-hoc";
 import { BooleanValue } from "react-values";
-import ReactTable from "react-table";
+// import ReactTable from "react-table";
 import { withProps, branch } from "recompose";
+import { Table, Column, Cell } from "@blueprintjs/table";
 import InfoHelper from "../InfoHelper";
 import { getSelectedRowsFromEntities } from "./utils/selection";
 import rowClick, { finalizeSelection } from "./utils/rowClick";
@@ -144,35 +147,35 @@ class DataTable extends React.Component {
       return acc;
     }, {});
     finalizeSelection({ idMap: newIdMap, props: newProps });
-    const idToScrollTo = idArray[0];
-    if (!idToScrollTo && idToScrollTo !== 0) return;
-    const entityIndexToScrollTo = entities.findIndex(
-      e => e.id === idToScrollTo || e.code === idToScrollTo
-    );
-    const table = ReactDOM.findDOMNode(this.table);
-    if (entityIndexToScrollTo === -1 || !table) return;
-    const tableBody = table.querySelector(".rt-tbody");
-    if (!tableBody) return;
-    const rowEl = tableBody.getElementsByClassName("rt-tr-group")[
-      entityIndexToScrollTo
-    ];
-    if (!rowEl) return;
-    scrollIntoView(rowEl, tableBody, {
-      alignWithTop: true
-    });
+    // const idToScrollTo = idArray[0];
+    // if (!idToScrollTo && idToScrollTo !== 0) return;
+    // const entityIndexToScrollTo = entities.findIndex(
+    //   e => e.id === idToScrollTo || e.code === idToScrollTo
+    // );
+    // const table = ReactDOM.findDOMNode(this.table);
+    // if (entityIndexToScrollTo === -1 || !table) return;
+    // const tableBody = table.querySelector(".rt-tbody");
+    // if (!tableBody) return;
+    // const rowEl = tableBody.getElementsByClassName("rt-tr-group")[
+    //   entityIndexToScrollTo
+    // ];
+    // if (!rowEl) return;
+    // scrollIntoView(rowEl, tableBody, {
+    //   alignWithTop: true
+    // });
   };
 
   componentDidMount() {
     this.updateFromProps({}, computePresets(this.props));
-    const table = ReactDOM.findDOMNode(this.table);
-    let theads = table.getElementsByClassName("rt-thead");
-    let tbody = table.getElementsByClassName("rt-tbody")[0];
+    // const table = ReactDOM.findDOMNode(this.table);
+    // let theads = table.getElementsByClassName("rt-thead");
+    // let tbody = table.getElementsByClassName("rt-tbody")[0];
 
-    tbody.addEventListener("scroll", () => {
-      for (let i = 0; i < theads.length; i++) {
-        theads.item(i).scrollLeft = tbody.scrollLeft;
-      }
-    });
+    // tbody.addEventListener("scroll", () => {
+    //   for (let i = 0; i < theads.length; i++) {
+    //     theads.item(i).scrollLeft = tbody.scrollLeft;
+    //   }
+    // });
   }
 
   componentDidUpdate(oldProps) {
@@ -189,32 +192,32 @@ class DataTable extends React.Component {
 
     this.updateFromProps(computePresets(oldProps), computePresets(this.props));
 
-    let theads = table.getElementsByClassName("rt-thead");
-    let tbody = table.getElementsByClassName("rt-tbody")[0];
+    // let theads = table.getElementsByClassName("rt-thead");
+    // let tbody = table.getElementsByClassName("rt-tbody")[0];
 
-    if (tbody.scrollHeight > tbody.clientHeight) {
-      for (let i = 0; i < theads.length; i++) {
-        theads.item(i).classList.add("vertical-scrollbar-present");
-      }
-    } else {
-      for (let i = 0; i < theads.length; i++) {
-        theads.item(i).classList.remove("vertical-scrollbar-present");
-      }
-    }
+    // if (tbody.scrollHeight > tbody.clientHeight) {
+    //   for (let i = 0; i < theads.length; i++) {
+    //     theads.item(i).classList.add("vertical-scrollbar-present");
+    //   }
+    // } else {
+    //   for (let i = 0; i < theads.length; i++) {
+    //     theads.item(i).classList.remove("vertical-scrollbar-present");
+    //   }
+    // }
 
-    // if switching pages or searching the table we want to reset the scrollbar
-    if (tbody.scrollTop > 0) {
-      const { entities = [] } = this.props;
-      const { entities: oldEntities = [] } = oldProps;
-      const reloaded = oldProps.isLoading && !this.props.isLoading;
-      const entitiesHaveChanged =
-        oldEntities.length !== entities.length ||
-        getIdOrCodeOrIndex(entities[0] || {}) !==
-          getIdOrCodeOrIndex(oldEntities[0] || {});
-      if (reloaded || entitiesHaveChanged) {
-        tbody.scrollTop = 0;
-      }
-    }
+    // // if switching pages or searching the table we want to reset the scrollbar
+    // if (tbody.scrollTop > 0) {
+    //   const { entities = [] } = this.props;
+    //   const { entities: oldEntities = [] } = oldProps;
+    //   const reloaded = oldProps.isLoading && !this.props.isLoading;
+    //   const entitiesHaveChanged =
+    //     oldEntities.length !== entities.length ||
+    //     getIdOrCodeOrIndex(entities[0] || {}) !==
+    //       getIdOrCodeOrIndex(oldEntities[0] || {});
+    //   if (reloaded || entitiesHaveChanged) {
+    //     tbody.scrollTop = 0;
+    //   }
+    // }
 
     // comment in to test what is causing re-render
     // Object.entries(this.props).forEach(
@@ -638,84 +641,54 @@ class DataTable extends React.Component {
           </div>
         )}
         {subHeader}
-        <ReactTable
-          data={entities}
-          ref={n => {
-            if (n) this.table = n;
-          }}
-          columns={this.renderColumns()}
-          pageSize={rowsToShow}
-          expanded={expandedRows}
-          showPagination={false}
-          sortable={false}
-          loading={isLoading || disabled}
-          defaultResized={resized}
-          onResizedChange={(newResized = []) => {
-            const resizedToUse = newResized.map(column => {
-              // have a min width of 50 so that columns don't disappear
-              if (column.value < 50) {
-                return {
-                  ...column,
-                  value: 50
-                };
-              } else {
-                return column;
-              }
-            });
-            resizePersist(resizedToUse);
-          }}
-          getTbodyProps={() => ({
-            id: tableId
-          })}
-          TheadComponent={this.getTheadComponent}
-          ThComponent={this.getThComponent}
-          getTrGroupProps={this.getTableRowProps}
-          NoDataComponent={({ children }) =>
-            isLoading ? null : <div className="rt-noData">{children}</div>
-          }
-          LoadingComponent={props => (
-            <DisabledLoadingComponent {...{ ...props, disabled }} />
-          )}
-          style={{
-            maxHeight,
-            minHeight: 150,
-            ...style
-          }}
-          SubComponent={SubComponentToUse}
-          {...ReactTableProps}
-        />
-        {!noFooter && (
-          <div
-            className="data-table-footer"
-            style={{
-              justifyContent:
-                !showNumSelected && !showCount ? "flex-end" : "space-between"
-            }}
-          >
-            {selectedAndTotalMessage}
-            <div style={{ display: "flex", flexWrap: "wrap" }}>
-              {!noFullscreenButton && toggleFullscreenButton}
-              {withDisplayOptions && (
-                <DisplayOptions
-                  compact={compact}
-                  disabled={disabled}
-                  hideDisplayOptionsIcon={hideDisplayOptionsIcon}
-                  resetDefaultVisibility={resetDefaultVisibilityToUse}
-                  updateColumnVisibility={updateColumnVisibilityToUse}
-                  updateTableDisplayDensity={updateTableDisplayDensityToUse}
-                  showForcedHiddenColumns={showForcedHiddenColumns}
-                  setShowForcedHidden={setShowForcedHidden}
-                  hasOptionForForcedHidden={hasOptionForForcedHidden}
-                  formName={formName}
-                  schema={schema}
-                />
-              )}
-              {shouldShowPaging && (
-                <PagingTool {...computePresets(this.props)} />
-              )}
-            </div>
-          </div>
-        )}
+        <Table
+          numRows={rowsToShow}
+          // data={entities}
+          // ref={n => {
+          //   if (n) this.table = n;
+          // }}
+          // pageSize={rowsToShow}
+          // expanded={expandedRows}
+          // showPagination={false}
+          // sortable={false}
+          // loading={isLoading || disabled}
+          // defaultResized={resized}
+          // onResizedChange={(newResized = []) => {
+          //   const resizedToUse = newResized.map(column => {
+          //     // have a min width of 50 so that columns don't disappear
+          //     if (column.value < 50) {
+          //       return {
+          //         ...column,
+          //         value: 50
+          //       };
+          //     } else {
+          //       return column;
+          //     }
+          //   });
+          //   resizePersist(resizedToUse);
+          // }}
+          // getTbodyProps={() => ({
+          //   id: tableId
+          // })}
+          // TheadComponent={this.getTheadComponent}
+          // ThComponent={this.getThComponent}
+          // getTrGroupProps={this.getTableRowProps}
+          // NoDataComponent={({ children }) =>
+          //   isLoading ? null : <div className="rt-noData">{children}</div>
+          // }
+          // LoadingComponent={props => (
+          //   <DisabledLoadingComponent {...{ ...props, disabled }} />
+          // )}
+          // style={{
+          //   maxHeight,
+          //   minHeight: 150,
+          //   ...style
+          // }}
+          // SubComponent={SubComponentToUse}
+          // {...ReactTableProps}
+        >
+          {this.renderColumns()}
+        </Table>
       </div>
     );
   }
@@ -1083,7 +1056,23 @@ class DataTable extends React.Component {
 
       columnsToRender.push(tableColumn);
     });
-    return columnsToRender;
+    return columnsToRender.map((c, i) => {
+      return (
+        <Column
+          key={i}
+          cellRenderer={rowIndex => (
+            <Cell key={rowIndex}>
+              {c.Cell
+                ? c.Cell({
+                    value: entities[rowIndex][c.path],
+                    index: rowIndex
+                  })
+                : ""}
+            </Cell>
+          )}
+        />
+      );
+    });
   };
 
   getCopyTextForCell = (val, row, column) => {
@@ -1332,3 +1321,7 @@ class DataTable extends React.Component {
 export default dataTableEnhancer(HotkeysTarget(DataTable));
 const ConnectedPagingTool = dataTableEnhancer(PagingTool);
 export { ConnectedPagingTool };
+
+const cellRenderer = (rowIndex: number) => {
+  return <Cell>{`$${(rowIndex * 10).toFixed(2)}`}</Cell>;
+};
