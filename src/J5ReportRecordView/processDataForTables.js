@@ -142,10 +142,10 @@ const processJ5AnnealedOligo = j5Oligos => {
         let bottomOligo = j5Oligo.oligo.j5AnnealedOligosBottomOligos[0];
         let oligo = topOligo || bottomOligo;
 
-        if (oligo.sequence.j5AssemblyPiece.metadata) {
-          targetPart = oligo.sequence.j5AssemblyPiece.metadata.parts_contained_names.join(
-            ", "
-          );
+        if (oligo.sequence.j5AssemblyPiece.j5TargetParts) {
+          targetPart = oligo.sequence.j5AssemblyPiece.j5TargetParts
+            .map(j5tp => j5tp.j5InputPart.part.name)
+            .join(", ");
         } else {
           targetPart = oligo.j5InputPart.part.name;
         }
@@ -173,10 +173,7 @@ function getWrappedInParensMatches(s) {
 export default {
   j5PcrReaction: processJ5PcrReactions,
   j5InputSequence: processInputSequences,
-  j5InputPart: compose(
-    processInputParts,
-    getInputPartsFromInputSequences
-  ),
+  j5InputPart: compose(processInputParts, getInputPartsFromInputSequences),
   j5OligoSynthesis: processJ5OligoSynthesis,
   j5AnnealedOligo: processJ5AnnealedOligo,
   j5AssemblyPiece: processJ5AssemblyPieces,
