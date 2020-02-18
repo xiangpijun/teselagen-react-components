@@ -42,18 +42,17 @@ const processJ5RunConstructs = j5RunConstructs =>
         .map(part => part.name)
         .join(", "),
       partsContainedNames:
-        j5RunConstruct.partNames ||
-        (get(
+        get(
           j5RunConstruct,
           "j5ConstructAssemblyPieces[0].assemblyPiece.j5AssemblyPieceParts[0].j5InputPart.sequencePart.name"
         ) &&
-          flatMap(
-            j5RunConstruct.j5ConstructAssemblyPieces,
-            j5ConstructAssemblyPiece =>
-              j5ConstructAssemblyPiece.assemblyPiece.j5AssemblyPieceParts.map(
-                j5InputPart => j5InputPart.j5InputPart.sequencePart.name
-              )
-          ).join(", "))
+        flatMap(
+          j5RunConstruct.j5ConstructAssemblyPieces,
+          j5ConstructAssemblyPiece =>
+            j5ConstructAssemblyPiece.assemblyPiece.j5AssemblyPieceParts.map(
+              j5InputPart => j5InputPart.j5InputPart.sequencePart.name
+            )
+        ).join(", ")
     }));
 
 const processPrebuiltConstructs = j5RunConstructs =>
@@ -142,8 +141,8 @@ const processJ5AnnealedOligo = j5Oligos => {
         let bottomOligo = j5Oligo.oligo.j5AnnealedOligosBottomOligos[0];
         let oligo = topOligo || bottomOligo;
 
-        if (oligo.sequence.j5AssemblyPiece.j5TargetParts) {
-          targetPart = oligo.sequence.j5AssemblyPiece.j5TargetParts
+        if (oligo.sequence.j5AssemblyPiece.j5AssemblyPieceParts) {
+          targetPart = oligo.sequence.j5AssemblyPiece.j5AssemblyPieceParts
             .map(j5tp => j5tp.j5InputPart.part.name)
             .join(", ");
         } else {

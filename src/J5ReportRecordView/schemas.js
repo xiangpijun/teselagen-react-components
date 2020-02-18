@@ -178,8 +178,6 @@ const schemas = {
         displayName: "DNA Synthesis ID"
       },
       { path: "sequence.name", type: "string", displayName: "Name" },
-      // { path: "firstTargetPart", type: "string"  },
-      // { path: "lastTargetPart", type: "string"  },
       { path: "inStock", type: "boolean", displayName: "In Stock" },
       {
         path: "sequence.polynucleotideMaterialId",
