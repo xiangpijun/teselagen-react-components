@@ -143,10 +143,10 @@ const processJ5AnnealedOligo = j5Oligos => {
 
         if (oligo.sequence.j5AssemblyPiece.j5AssemblyPieceParts) {
           targetPart = oligo.sequence.j5AssemblyPiece.j5AssemblyPieceParts
-            .map(j5tp => j5tp.j5InputPart.part.name)
+            .map(j5tp => j5tp.j5InputPart.sequencePart.name)
             .join(", ");
         } else {
-          targetPart = oligo.j5InputPart.part.name;
+          targetPart = oligo.j5InputPart.sequencePart.name;
         }
       } catch (e) {
         targetPart = "not found";
@@ -172,7 +172,10 @@ function getWrappedInParensMatches(s) {
 export default {
   j5PcrReaction: processJ5PcrReactions,
   j5InputSequence: processInputSequences,
-  j5InputPart: compose(processInputParts, getInputPartsFromInputSequences),
+  j5InputPart: compose(
+    processInputParts,
+    getInputPartsFromInputSequences
+  ),
   j5OligoSynthesis: processJ5OligoSynthesis,
   j5AnnealedOligo: processJ5AnnealedOligo,
   j5AssemblyPiece: processJ5AssemblyPieces,

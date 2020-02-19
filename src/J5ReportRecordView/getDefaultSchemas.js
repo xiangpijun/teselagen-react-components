@@ -75,7 +75,9 @@ const getDefaultSchemas = (isGoldenGate, isGibson) => {
           path: "j5TargetParts",
           displayName: "Target Parts",
           render: (j5TargetParts = []) =>
-            j5TargetParts.map(j5tp => j5tp.j5InputPart.part.name).join(", ")
+            j5TargetParts
+              .map(j5tp => j5tp.j5InputPart.sequencePart.name)
+              .join(", ")
         },
         { path: "tm", type: "number", displayName: "Tm (°C)" },
         { path: "tm3Prime", type: "number", displayName: "Tm 3' Only (°C)" },
@@ -221,7 +223,7 @@ const getJ5AssemblyPiecesFields = (isGoldenGate, isGibson) => [
     render: (j5AssemblyPieceParts = []) =>
       j5AssemblyPieceParts
         .sort((a, b) => a.index - b.index)
-        .map(piecePart => piecePart.j5InputPart.part.name)
+        .map(piecePart => piecePart.j5InputPart.sequencePart.name)
         .join(", ")
   },
   ...getOverhangFields(isGoldenGate, isGibson),
