@@ -10,7 +10,8 @@ import { ApolloConsumer } from "react-apollo";
 import Loading from "../Loading";
 import magicDownload from "../DownloadLink/magicDownload";
 import showProgressToast from "../utils/showProgressToast";
-import schemas from "./schemas";
+import getDefaultSchemas from "./getDefaultSchemas";
+import schemasPrev from "./schemasPrev";
 import { getLinkDialogProps } from "./utils";
 import exportOligosFields from "./exportOligosFields";
 import J5TableCard from "./J5TableCard";
@@ -338,6 +339,18 @@ class J5ReportRecordView extends Component {
     };
   };
 
+  isGibson() {
+    const { data } = this.props;
+    if (!data.j5Report) return false;
+    return data.j5Report.assemblyMethod === "SLIC/Gibson/CPEC";
+  }
+
+  isGoldenGate() {
+    const { data } = this.props;
+    if (!data.j5Report) return false;
+    return data.j5Report.assemblyMethod === "GoldenGate";
+  }
+
   /**
    * Given the model (pluralized) get the schema corresponding to the model. This
    * will either be the default schema or the one returned by the prop `getSchema`
@@ -352,7 +365,34 @@ class J5ReportRecordView extends Component {
       );
     }
 
-    const defaultSchema = schemas[model];
+    const defaultSchema = getDefaultSchemas(
+      this.isGoldenGate(),
+      this.isGibson()
+    );
+    const passedGetSchema = this.props.getSchema;
+
+    if (passedGetSchema) {
+      return passedGetSchema(model, defaultSchema);
+    } else {
+      return defaultSchema;
+    }
+  }
+
+  /**
+   * Given the model (pluralized) get the schema prior to the j5v4 refactor corresponding to the model.
+   * This will either be the default schema or the one returned by the prop `getSchema`
+   * if that prop is passed. The prop will be called with the model as the first argument and
+   * the default schema as its second argument. The prop should not mutate the schema.
+   * @param {string} model Should be pluralized.
+   */
+  getSchemaPrev(model) {
+    if (model === "combinationOfAssemblyPieces") {
+      throw new Error(
+        "Due pecularities in the code, we cannot override the schema for combinationOfAssemblyPieces"
+      );
+    }
+
+    const defaultSchema = schemasPrev[model];
     const passedGetSchema = this.props.getSchema;
 
     if (passedGetSchema) {
@@ -469,7 +509,11 @@ class J5ReportRecordView extends Component {
               showLinkModal={() => this.showLinkModal("constructs")}
               isLinkable={isLinkable}
               onDoubleClick={onConstructDoubleClick}
-              schema={this.getSchema("j5RunConstructs")}
+              schema={
+                j5Report.version
+                  ? this.getSchema("j5RunConstructs")
+                  : this.getSchemaPrev("j5RunConstructs")
+              }
               tableProps={dataTableProps}
             />
           )}
@@ -529,7 +573,11 @@ class J5ReportRecordView extends Component {
             isLinkable={isLinkable}
             onDoubleClick={onConstructDoubleClick}
             tableProps={dataTableProps}
-            schema={this.getSchema("j5RunConstructs")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5RunConstructs")
+                : this.getSchemaPrev("j5RunConstructs")
+            }
             openTitleElements={constructsTitleElements}
           />
 
@@ -551,7 +599,11 @@ class J5ReportRecordView extends Component {
                 "j5InputSequence"
               )
             }
-            schema={this.getSchema("j5InputSequences")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5InputSequences")
+                : this.getSchemaPrev("j5InputSequences")
+            }
           />
 
           <J5TableCard
@@ -563,7 +615,11 @@ class J5ReportRecordView extends Component {
             entities={j5Report.j5InputSequences}
             fragment={fragmentMap.j5InputSequence}
             tableProps={dataTableProps}
-            schema={this.getSchema("j5InputParts")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5InputParts")
+                : this.getSchemaPrev("j5InputParts")
+            }
           />
 
           <J5TableCard
@@ -575,7 +631,11 @@ class J5ReportRecordView extends Component {
             fragment={fragmentMap.j5OligoSynthesis}
             tableProps={dataTableProps}
             isLinkable={isLinkable}
-            schema={this.getSchema("j5OligoSyntheses")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5OligoSyntheses")
+                : this.getSchemaPrev("j5OligoSyntheses")
+            }
             showLinkModal={() => this.showLinkModal("oligos")}
             linkButtonText="Link Oligos"
             openTitleElements={oligosTitleElements}
@@ -602,7 +662,11 @@ class J5ReportRecordView extends Component {
             fragment={fragmentMap.j5OligoSynthesis}
             tableProps={dataTableProps}
             isLinkable={isLinkable}
-            schema={this.getSchema("j5AnnealedOligos")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5AnnealedOligos")
+                : this.getSchemaPrev("j5AnnealedOligos")
+            }
             showLinkModal={() => this.showLinkModal("oligos")}
             linkButtonText="Link Oligos"
             cellRenderer={
@@ -622,7 +686,11 @@ class J5ReportRecordView extends Component {
             processData={processDataForTables.j5DirectSynthesis}
             entities={j5Report.j5DirectSyntheses}
             tableProps={dataTableProps}
-            schema={this.getSchema("j5DirectSyntheses")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5DirectSyntheses")
+                : this.getSchemaPrev("j5DirectSyntheses")
+            }
             fragment={fragmentMap.j5DirectSynthesis}
             isLinkable={isLinkable}
             showLinkModal={() => this.showLinkModal("dnaSynthesisSequences")}
@@ -648,7 +716,11 @@ class J5ReportRecordView extends Component {
             tableProps={dataTableProps}
             openTitleElements={pcrReactionsTitleElements}
             fragment={fragmentMap.j5PcrReaction}
-            schema={this.getSchema("j5PcrReactions")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5PcrReactions")
+                : this.getSchemaPrev("j5PcrReactions")
+            }
           />
 
           <J5TableCard
@@ -664,7 +736,11 @@ class J5ReportRecordView extends Component {
             showLinkModal={() => this.showLinkModal("dnaPieces")}
             linkButtonText="Link DNA Pieces"
             tableProps={dataTableProps}
-            schema={this.getSchema("j5AssemblyPieces")}
+            schema={
+              j5Report.version
+                ? this.getSchema("j5AssemblyPieces")
+                : this.getSchemaPrev("j5AssemblyPieces")
+            }
             cellRenderer={
               getIsLinkedCellRenderer &&
               getIsLinkedCellRenderer(
