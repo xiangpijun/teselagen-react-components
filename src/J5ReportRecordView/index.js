@@ -368,7 +368,7 @@ class J5ReportRecordView extends Component {
     const defaultSchema = getDefaultSchemas(
       this.isGoldenGate(),
       this.isGibson()
-    );
+    )[model];
     const passedGetSchema = this.props.getSchema;
 
     if (passedGetSchema) {
