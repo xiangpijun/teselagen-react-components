@@ -239,15 +239,15 @@ const getJ5AssemblyPiecesFields = (isGoldenGate, isGibson) => [
  * about the overhangs/overlaps.
  */
 const getOverhangFields = (isGoldenGate, isGibson) => {
-  if (!isGoldenGate() && !isGibson()) return [];
-  const over = isGoldenGate() ? "Overhang" : "Overlap";
+  if (!isGoldenGate && !isGibson) return [];
+  const over = isGoldenGate ? "Overhang" : "Overlap";
   return [
-    isGoldenGate() && {
+    isGoldenGate && {
       path: "overhangWithPrevious",
       type: "string",
       displayName: `${over} w/ Previous`
     },
-    isGoldenGate() && {
+    isGoldenGate && {
       path: "overhangWithPrevious",
       type: "number",
       displayName: `${over} w/ Previous Length`,
