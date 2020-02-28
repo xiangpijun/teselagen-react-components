@@ -26,6 +26,9 @@ const sharedTableProps = {
   withDisplayOptions: true,
   doNotShowEmptyRows: true,
   isLoading: false,
+  defaults: {
+    order: ["name"]
+  },
   urlConnected: false
 };
 
