@@ -27,7 +27,8 @@ const sharedTableProps = {
   doNotShowEmptyRows: true,
   isLoading: false,
   defaults: {
-    order: ["name"]
+    order: ["name"],
+    pageSize: 7
   },
   urlConnected: false
 };
@@ -464,7 +465,10 @@ class J5ReportRecordView extends Component {
     if (passedDataTableProps) {
       dataTableProps = {
         ...sharedTableProps,
-        ...passedDataTableProps
+        ...passedDataTableProps,
+        defaults: {
+          order: ["-name"]
+        }
       };
     }
 
@@ -524,7 +528,7 @@ class J5ReportRecordView extends Component {
           <J5TableCard
             j5ReportId={j5Report.id}
             helperMessage="Constructs are the desired sequences to be built in a j5 run."
-            title="Assembled Constructs"
+            title="Assembled Constructoooooos"
             processData={processDataForTables.j5RunConstruct}
             SubComponent={
               !j5Report.version
