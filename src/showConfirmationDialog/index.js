@@ -30,10 +30,14 @@ class AlertWrapper extends Component {
       text,
       resolve,
       content,
-      cancelButtonText = "Cancel",
+      cancelButtonText,
       intent = Intent.PRIMARY,
       ...rest
     } = this.props;
+    let cancelButtonTextToUse;
+    if (!cancelButtonText) {
+      cancelButtonTextToUse = cancelButtonText === null ? undefined : "Cancel";
+    }
     const doClose = confirm => {
       handleClose();
       this.setState({ isOpen: false });
@@ -43,8 +47,8 @@ class AlertWrapper extends Component {
       <Alert
         isOpen={this.state.isOpen}
         intent={intent}
-        cancelButtonText={cancelButtonText}
-        onCancel={cancelButtonText ? () => doClose(false) : undefined}
+        cancelButtonText={cancelButtonTextToUse}
+        onCancel={cancelButtonTextToUse ? () => doClose(false) : undefined}
         onConfirm={() => doClose(true)}
         {...rest}
       >

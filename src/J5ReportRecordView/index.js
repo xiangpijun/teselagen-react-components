@@ -528,7 +528,7 @@ class J5ReportRecordView extends Component {
           <J5TableCard
             j5ReportId={j5Report.id}
             helperMessage="Constructs are the desired sequences to be built in a j5 run."
-            title="Assembled Constructoooooos"
+            title="Assembled Constructs"
             processData={processDataForTables.j5RunConstruct}
             SubComponent={
               !j5Report.version
