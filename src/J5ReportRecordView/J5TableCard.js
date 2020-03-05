@@ -69,7 +69,13 @@ function J5TableCard({
 
 export default compose(
   withProps(props => {
-    const { fragment, title, schema: maybeSchema, j5ReportId } = props;
+    const {
+      fragment,
+      title,
+      schema: maybeSchema,
+      j5ReportId,
+      columnToSortBy
+    } = props;
     const formName =
       (window.frontEndConfig.tgModuleName || "") + "-" + camelCase(title);
 
@@ -97,6 +103,11 @@ export default compose(
     return {
       schema,
       formName,
+      defaults: columnToSortBy
+        ? {
+            order: [columnToSortBy]
+          }
+        : {},
       runTimeQueryOptions: {
         fragment,
         options: {

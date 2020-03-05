@@ -26,10 +26,6 @@ const sharedTableProps = {
   withDisplayOptions: true,
   doNotShowEmptyRows: true,
   isLoading: false,
-  defaults: {
-    order: ["name"],
-    pageSize: 7
-  },
   urlConnected: false
 };
 
@@ -465,10 +461,7 @@ class J5ReportRecordView extends Component {
     if (passedDataTableProps) {
       dataTableProps = {
         ...sharedTableProps,
-        ...passedDataTableProps,
-        defaults: {
-          order: ["-name"]
-        }
+        ...passedDataTableProps
       };
     }
 
@@ -512,6 +505,7 @@ class J5ReportRecordView extends Component {
                   ? j5Report.j5RunConstructs
                   : []
               }
+              columnToSortBy="constructName"
               fragment={fragmentMap.j5RunConstruct}
               showLinkModal={() => this.showLinkModal("constructs")}
               isLinkable={isLinkable}
@@ -541,6 +535,7 @@ class J5ReportRecordView extends Component {
                             marginLeft: "2em",
                             marginTop: "0.5em",
                             fontSize: "1.3em",
+                            userSelect: "text",
                             color: Colors.GREEN3
                           }}
                         >
@@ -550,7 +545,11 @@ class J5ReportRecordView extends Component {
                     return (
                       <div
                         className="tg-test-warning-box"
-                        style={{ marginLeft: "2em", marginTop: "1em" }}
+                        style={{
+                          userSelect: "text",
+                          marginLeft: "2em",
+                          marginTop: "1em"
+                        }}
                       >
                         <div style={{ fontSize: "1.5em", color: Colors.GOLD3 }}>
                           {"Warnings:"}
@@ -580,6 +579,7 @@ class J5ReportRecordView extends Component {
             isLinkable={isLinkable}
             onDoubleClick={onConstructDoubleClick}
             tableProps={dataTableProps}
+            columnToSortBy="constructName"
             schema={
               j5Report.version
                 ? this.getSchema("j5RunConstructs")
@@ -598,6 +598,7 @@ class J5ReportRecordView extends Component {
             showLinkModal={() => this.showLinkModal("inputSequences")}
             isLinkable={isLinkable}
             tableProps={dataTableProps}
+            columnToSortBy="name"
             cellRenderer={
               getIsLinkedCellRenderer &&
               getIsLinkedCellRenderer(
@@ -622,6 +623,7 @@ class J5ReportRecordView extends Component {
             entities={j5Report.j5InputSequences}
             fragment={fragmentMap.j5InputSequence}
             tableProps={dataTableProps}
+            columnToSortBy="partName"
             schema={
               j5Report.version
                 ? this.getSchema("j5InputParts")
@@ -637,6 +639,7 @@ class J5ReportRecordView extends Component {
             entities={j5Report.j5OligoSyntheses}
             fragment={fragmentMap.j5OligoSynthesis}
             tableProps={dataTableProps}
+            columnToSortBy="oligoName"
             isLinkable={isLinkable}
             schema={
               j5Report.version
@@ -669,6 +672,7 @@ class J5ReportRecordView extends Component {
             fragment={fragmentMap.j5OligoSynthesis}
             tableProps={dataTableProps}
             isLinkable={isLinkable}
+            columnToSortBy="oligoName"
             schema={
               j5Report.version
                 ? this.getSchema("j5AnnealedOligos")
@@ -703,6 +707,7 @@ class J5ReportRecordView extends Component {
             showLinkModal={() => this.showLinkModal("dnaSynthesisSequences")}
             linkButtonText="Link DNA Synthesis Pieces"
             openTitleElements={synthonSequenceTitleElements}
+            columnToSortBy="name"
             cellRenderer={
               getIsLinkedCellRenderer &&
               getIsLinkedCellRenderer(
@@ -723,6 +728,7 @@ class J5ReportRecordView extends Component {
             tableProps={dataTableProps}
             openTitleElements={pcrReactionsTitleElements}
             fragment={fragmentMap.j5PcrReaction}
+            columnToSortBy="pcrId"
             schema={
               j5Report.version
                 ? this.getSchema("j5PcrReactions")
@@ -743,6 +749,7 @@ class J5ReportRecordView extends Component {
             showLinkModal={() => this.showLinkModal("dnaPieces")}
             linkButtonText="Link DNA Pieces"
             tableProps={dataTableProps}
+            columnToSortBy="pieceId"
             schema={
               j5Report.version
                 ? this.getSchema("j5AssemblyPieces")
@@ -770,6 +777,7 @@ class J5ReportRecordView extends Component {
                 ? []
                 : j5Report.j5RunConstructs
             }
+            columnToSortBy="constructName"
             fragment={fragmentMap.j5RunConstruct}
             tableProps={dataTableProps}
             createSchema={
