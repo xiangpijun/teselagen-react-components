@@ -100,14 +100,16 @@ export default compose(
         fields: []
       };
     }
+
+    const defaults = columnToSortBy
+      ? {
+          order: [columnToSortBy]
+        }
+      : {};
+
     return {
       schema,
       formName,
-      defaults: columnToSortBy
-        ? {
-            order: [columnToSortBy]
-          }
-        : {},
       runTimeQueryOptions: {
         fragment,
         options: {
@@ -117,7 +119,8 @@ export default compose(
             }
           }
         }
-      }
+      },
+      ...defaults
     };
   }),
   branch(

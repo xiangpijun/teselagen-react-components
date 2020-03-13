@@ -505,7 +505,6 @@ class J5ReportRecordView extends Component {
                   ? j5Report.j5RunConstructs
                   : []
               }
-              columnToSortBy="constructName"
               fragment={fragmentMap.j5RunConstruct}
               showLinkModal={() => this.showLinkModal("constructs")}
               isLinkable={isLinkable}
@@ -598,7 +597,6 @@ class J5ReportRecordView extends Component {
             showLinkModal={() => this.showLinkModal("inputSequences")}
             isLinkable={isLinkable}
             tableProps={dataTableProps}
-            columnToSortBy="name"
             cellRenderer={
               getIsLinkedCellRenderer &&
               getIsLinkedCellRenderer(
@@ -623,7 +621,6 @@ class J5ReportRecordView extends Component {
             entities={j5Report.j5InputSequences}
             fragment={fragmentMap.j5InputSequence}
             tableProps={dataTableProps}
-            columnToSortBy="partName"
             schema={
               j5Report.version
                 ? this.getSchema("j5InputParts")
@@ -777,7 +774,6 @@ class J5ReportRecordView extends Component {
                 ? []
                 : j5Report.j5RunConstructs
             }
-            columnToSortBy="constructName"
             fragment={fragmentMap.j5RunConstruct}
             tableProps={dataTableProps}
             createSchema={
