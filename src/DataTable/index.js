@@ -1297,7 +1297,7 @@ class DataTable extends React.Component {
           compact={compact}
           extraCompact={extraCompact}
         />
-      ) : null;
+      ) : null; //
 
     return (
       <div
